@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" class="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#020617" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="format-detection" content="telephone=no" />
   <title>خُلاصة الكتب | ملخصات ذكية بالذكاء الاصطناعي (Gemini AI)</title>
   <link rel="icon" type="image/svg+xml" href="/book-icon.svg" />
   
@@ -139,36 +143,15 @@
             <span id="api-key-badge-text">إدخال مفتاح Gemini</span>
           </button>
         </div>
-
-      </div>
-
-      <!-- نافبار الجوال -->
-      <div class="flex md:hidden items-center justify-around py-2.5 border-t border-slate-800/60 text-xs overflow-x-auto gap-1">
-        <button data-nav-tab="search" class="flex items-center gap-1 px-3 py-1.5 rounded-lg font-bold bg-emerald-500 text-slate-950">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-          <span>تلخيص</span>
-        </button>
-        <button data-nav-tab="explore-books" class="flex items-center gap-1 px-3 py-1.5 rounded-lg font-semibold text-slate-300">
-          <i data-lucide="book" class="w-3.5 h-3.5"></i>
-          <span>الكتب</span>
-        </button>
-        <button data-nav-tab="explore-authors" class="flex items-center gap-1 px-3 py-1.5 rounded-lg font-semibold text-slate-300">
-          <i data-lucide="users" class="w-3.5 h-3.5"></i>
-          <span>المؤلفين</span>
-        </button>
-        <button data-nav-tab="saved" class="flex items-center gap-1 px-3 py-1.5 rounded-lg font-semibold text-slate-300">
-          <i data-lucide="bookmark" class="w-3.5 h-3.5"></i>
-          <span>محفوظاتي</span>
-        </button>
       </div>
     </div>
   </header>
 
   <!-- ========================= المحتوى الرئيسي ========================= -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow">
+  <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8 w-full flex-grow pb-32 md:pb-8">
     
     <!-- 1. تبويب البحث والتوليد الرئيسي (Search Hero) -->
-    <section id="tab-search" class="space-y-12">
+    <section id="tab-search" class="space-y-8 sm:space-y-12">
       <!-- Hero Box -->
       <div class="relative rounded-3xl overflow-hidden bg-gradient-to-b from-slate-900/90 via-slate-900/60 to-slate-950 p-6 sm:p-12 border border-slate-800 shadow-2xl text-center">
         <!-- Glow Effect -->
@@ -402,19 +385,28 @@
               </div>
             </div>
 
-            <!-- شريط أدوات التحكم بالملخص (حفظ، نسخ، طباعة) -->
+            <!-- شريط أدوات التحكم بالملخص (مشاركة واتساب، حفظ، نسخ، طباعة) -->
             <div class="flex flex-wrap items-center gap-2 no-print">
-              <button id="action-save-btn" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all">
+              <!-- زر مشاركة واتساب المميز -->
+              <button id="action-whatsapp-btn" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-[#25D366] hover:bg-[#20ba59] text-slate-950 shadow-md shadow-emerald-950/40 transition-all hover:scale-105 active:scale-95 flex-shrink-0" title="مشاركة الملخص عبر واتساب">
+                <svg class="w-4 h-4 fill-slate-950" viewBox="0 0 24 24">
+                  <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.101.005.232-.039.362.275.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.087-.179.181-.077.355.101.173.45 1.042 1.343 1.558 1.144.661 1.455.679 1.674.564.217-.116.491-.564.622-.767.13-.202.26-.173.433-.101.173.072 1.099.52 1.287.622.188.101.317.145.362.217.043.072.043.419-.101.824z"/>
+                  <path d="M12 2C6.477 2 2 6.477 2 12c0 1.891.526 3.662 1.443 5.176L2 22l4.981-1.309A9.957 9.957 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18.063c-1.637 0-3.17-.468-4.48-1.279l-.321-.197-2.962.778.791-2.893-.216-.343A8.026 8.026 0 014 12c0-4.411 3.589-8.063 8-8.063s8 3.652 8 8.063-3.589 8.063-8 8.063z"/>
+                </svg>
+                <span>مشاركة واتساب</span>
+              </button>
+
+              <button id="action-save-btn" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all">
                 <i data-lucide="bookmark" class="w-4 h-4"></i>
                 <span>حفظ في المفضلة</span>
               </button>
 
-              <button id="action-copy-btn" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all">
+              <button id="action-copy-btn" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all">
                 <i data-lucide="copy" class="w-4 h-4"></i>
                 <span>نسخ الملخص</span>
               </button>
 
-              <button id="action-print-btn" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all">
+              <button id="action-print-btn" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all">
                 <i data-lucide="printer" class="w-4 h-4"></i>
                 <span>تصدير PDF</span>
               </button>
@@ -755,6 +747,60 @@
       </div>
     </div>
   </div>
+
+  <!-- ========================= شريط الإجراءات السفلي العائم للهواتف المحمولة (سامسونج M31) ========================= -->
+  <div id="mobile-summary-floating-bar" class="fixed bottom-20 inset-x-3 z-40 md:hidden hidden bg-slate-900/95 backdrop-blur-2xl border border-slate-700/80 rounded-2xl p-2 shadow-2xl no-print transition-all">
+    <div class="flex items-center justify-between gap-2">
+      <!-- زر مشاركة واتساب الرئيسي للجوال -->
+      <button id="mobile-float-whatsapp-btn" class="flex-1 flex items-center justify-center gap-2 py-3 px-3 rounded-xl text-xs sm:text-sm font-black bg-[#25D366] active:bg-[#20ba59] text-slate-950 shadow-lg shadow-emerald-950/40 transition-transform active:scale-95">
+        <svg class="w-4 h-4 fill-slate-950" viewBox="0 0 24 24">
+          <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.101.005.232-.039.362.275.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.087-.179.181-.077.355.101.173.45 1.042 1.343 1.558 1.144.661 1.455.679 1.674.564.217-.116.491-.564.622-.767.13-.202.26-.173.433-.101.173.072 1.099.52 1.287.622.188.101.317.145.362.217.043.072.043.419-.101.824z"/>
+          <path d="M12 2C6.477 2 2 6.477 2 12c0 1.891.526 3.662 1.443 5.176L2 22l4.981-1.309A9.957 9.957 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18.063c-1.637 0-3.17-.468-4.48-1.279l-.321-.197-2.962.778.791-2.893-.216-.343A8.026 8.026 0 014 12c0-4.411 3.589-8.063 8-8.063s8 3.652 8 8.063-3.589 8.063-8 8.063z"/>
+        </svg>
+        <span>مشاركة واتساب</span>
+      </button>
+
+      <!-- زر الاستماع السريع بالجوال -->
+      <button id="mobile-float-audio-btn" class="flex items-center justify-center gap-1.5 py-3 px-3.5 rounded-xl text-xs font-bold bg-slate-800 text-emerald-400 border border-slate-700 active:bg-slate-700">
+        <i data-lucide="headphones" class="w-4 h-4"></i>
+        <span>استماع</span>
+      </button>
+
+      <!-- زر حفظ المفضلة السريع -->
+      <button id="mobile-float-save-btn" class="p-3 rounded-xl bg-slate-800 text-slate-200 border border-slate-700 active:bg-slate-700" title="حفظ بالمفضلة">
+        <i data-lucide="bookmark" class="w-4 h-4"></i>
+      </button>
+
+      <!-- زر نسخ الملخص السريع -->
+      <button id="mobile-float-copy-btn" class="p-3 rounded-xl bg-slate-800 text-slate-200 border border-slate-700 active:bg-slate-700" title="نسخ">
+        <i data-lucide="copy" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================= شريط التنقل السفلي الأصلي لتطبيقات الموبايل (Native Bottom Bar) ========================= -->
+  <nav class="fixed bottom-0 inset-x-0 z-50 md:hidden bg-slate-950/95 backdrop-blur-2xl border-t border-slate-800/90 px-2 py-2 flex items-center justify-around shadow-2xl no-print" style="padding-bottom: max(0.5rem, env(safe-area-inset-bottom));">
+    <button data-nav-tab="search" class="flex flex-col items-center justify-center gap-1 py-1.5 px-3 rounded-xl min-w-[64px] transition-all text-emerald-400 font-bold">
+      <i data-lucide="sparkles" class="w-5 h-5"></i>
+      <span class="text-[10px]">تلخيص</span>
+    </button>
+
+    <button data-nav-tab="explore-books" class="flex flex-col items-center justify-center gap-1 py-1.5 px-3 rounded-xl min-w-[64px] transition-all text-slate-400 hover:text-white">
+      <i data-lucide="book" class="w-5 h-5"></i>
+      <span class="text-[10px]">الكتب</span>
+    </button>
+
+    <button data-nav-tab="explore-authors" class="flex flex-col items-center justify-center gap-1 py-1.5 px-3 rounded-xl min-w-[64px] transition-all text-slate-400 hover:text-white">
+      <i data-lucide="users" class="w-5 h-5"></i>
+      <span class="text-[10px]">المؤلفين</span>
+    </button>
+
+    <button data-nav-tab="saved" class="flex flex-col items-center justify-center gap-1 py-1.5 px-3 rounded-xl min-w-[64px] transition-all text-slate-400 hover:text-white relative">
+      <i data-lucide="bookmark" class="w-5 h-5"></i>
+      <span class="text-[10px]">المحفوظات</span>
+      <span id="mobile-saved-count" class="text-[9px] font-bold px-1 rounded-full bg-slate-800 text-emerald-400 absolute top-0.5 right-2">0</span>
+    </button>
+  </nav>
 
   <!-- السكربتات التفاعلية -->
   <script type="module" src="./data.js"></script>

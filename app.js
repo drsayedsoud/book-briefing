@@ -267,7 +267,9 @@ function renderCuratedAuthors() {
 function renderSavedSummaries() {
   const container = document.getElementById('saved-grid');
   const countBadge = document.getElementById('saved-count');
+  const mobileCountBadge = document.getElementById('mobile-saved-count');
   if (countBadge) countBadge.textContent = state.savedSummaries.length;
+  if (mobileCountBadge) mobileCountBadge.textContent = state.savedSummaries.length;
 
   if (!container) return;
 
@@ -746,6 +748,11 @@ function displaySummary(summary) {
   // تحديث حالة زر الحفظ في المفضلة
   updateBookmarkButton();
 
+  // إظهار شريط الإجراءات والواتساب العائم للموبايل (سامسونج M31)
+  if (state.currentTab === 'summary') {
+    document.getElementById('mobile-summary-floating-bar')?.classList.remove('hidden');
+  }
+
   initIcons();
 }
 
@@ -969,7 +976,40 @@ ${(s.actionableSteps || []).map((st, i) => `${i + 1}. ${st}`).join('\n')}
   });
 }
 
-// التبديل بين التبويبات
+// مشاركة الملخص عبر واتساب بنص منسق وجذاب (متوافق 100% مع هواتف سامسونج وآندرويد)
+function shareToWhatsApp() {
+  if (!state.currentSummary) {
+    alert('يرجى اختيار أو توليد ملخص أولاً للمشاركة.');
+    return;
+  }
+  const s = state.currentSummary;
+  const siteUrl = 'https://book-briefing.vercel.app';
+
+  let takeawaysFormatted = '';
+  if (s.keyTakeaways && s.keyTakeaways.length > 0) {
+    takeawaysFormatted = s.keyTakeaways.slice(0, 3).map((t, idx) => {
+      return `🔹 *${t.title}:*\n${t.description.slice(0, 110)}...`;
+    }).join('\n\n');
+  }
+
+  const message = `📚 *خُلاصة كتاب: ${s.title}*
+✍️ *المؤلف:* ${s.author} ${s.publishedYear ? `(${s.publishedYear})` : ''}
+
+💡 *الفكرة الجوهرية:*
+"${s.oneSentencePitch || ''}"
+
+${takeawaysFormatted ? `🔑 *أهم الدروس المستفادة:*\n${takeawaysFormatted}\n\n` : ''}🎧 *لقراءة الملخص كاملاً أو الاستماع إليه صوتياً:*
+👉 ${siteUrl}
+
+_تمت المشاركة عبر تطبيق خُلاصة الكتب_`;
+
+  const encoded = encodeURIComponent(message);
+  // يعمل بشكل أصلي وفوري على هواتف سامسونج جالاكسي وجميع أجهزة آندرويد
+  const waUrl = `https://api.whatsapp.com/send?text=${encoded}`;
+  window.open(waUrl, '_blank');
+}
+
+// التبديل بين التبويبات مع دعم شريط الموبايل السفلي
 function switchTab(tabName) {
   state.currentTab = tabName;
 
@@ -985,15 +1025,41 @@ function switchTab(tabName) {
     }
   });
 
-  // تحديث أزرار النافبار
+  // إظهار أو إخفاء شريط الإجراءات العائم للموبايل
+  const mobileFloatBar = document.getElementById('mobile-summary-floating-bar');
+  if (mobileFloatBar) {
+    if (tabName === 'summary' && state.currentSummary) {
+      mobileFloatBar.classList.remove('hidden');
+    } else {
+      mobileFloatBar.classList.add('hidden');
+    }
+  }
+
+  // تحديث أزرار النافبار العلوي والسفلي للهواتف
   document.querySelectorAll('[data-nav-tab]').forEach(btn => {
     const target = btn.getAttribute('data-nav-tab');
-    if (target === tabName || (target === 'search' && tabName === 'summary')) {
-      btn.classList.add('bg-emerald-500', 'text-slate-950');
-      btn.classList.remove('text-slate-300', 'hover:bg-slate-800/50');
-    } else {
-      btn.classList.remove('bg-emerald-500', 'text-slate-950');
-      btn.classList.add('text-slate-300');
+    const isTarget = target === tabName || (target === 'search' && tabName === 'summary');
+
+    // للنافبار الديسكتوب
+    if (btn.closest('header nav')) {
+      if (isTarget) {
+        btn.classList.add('bg-emerald-500', 'text-slate-950');
+        btn.classList.remove('text-slate-300', 'hover:bg-slate-800/60');
+      } else {
+        btn.classList.remove('bg-emerald-500', 'text-slate-950');
+        btn.classList.add('text-slate-300');
+      }
+    }
+
+    // للنافبار السفلي للموبايل (سامسونج M31)
+    if (btn.closest('body > nav')) {
+      if (isTarget) {
+        btn.classList.add('text-emerald-400', 'font-bold');
+        btn.classList.remove('text-slate-400');
+      } else {
+        btn.classList.remove('text-emerald-400', 'font-bold');
+        btn.classList.add('text-slate-400');
+      }
     }
   });
 
@@ -1002,13 +1068,31 @@ function switchTab(tabName) {
 
 // ضبط جميع مستمعي الأحداث
 function setupEventListeners() {
-  // أزرار التنقل (Navbar)
+  // أزرار التنقل (Navbar العلوي والسفلي)
   document.querySelectorAll('[data-nav-tab]').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const tab = e.currentTarget.getAttribute('data-nav-tab');
       switchTab(tab);
     });
   });
+
+  // زر مشاركة واتساب (الشريط العلوي والشريط العائم للموبايل)
+  document.getElementById('action-whatsapp-btn')?.addEventListener('click', shareToWhatsApp);
+  document.getElementById('mobile-float-whatsapp-btn')?.addEventListener('click', shareToWhatsApp);
+
+  // أزرار الشريط العائم للهواتف المحمولة
+  document.getElementById('mobile-float-audio-btn')?.addEventListener('click', () => {
+    const playBtn = document.getElementById('audio-play-btn');
+    const pauseBtn = document.getElementById('audio-pause-btn');
+    if (state.tts.isPlaying) {
+      pauseBtn?.click();
+    } else {
+      playBtn?.click();
+    }
+  });
+
+  document.getElementById('mobile-float-save-btn')?.addEventListener('click', toggleBookmarkCurrent);
+  document.getElementById('mobile-float-copy-btn')?.addEventListener('click', copySummaryMarkdown);
 
   // نموذج البحث والتوليد الرئيسي
   const mainSearchForm = document.getElementById('main-search-form');
