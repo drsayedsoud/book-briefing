@@ -1,0 +1,7 @@
+{
+  "name": "book-briefing-gemini",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Smart Book Summaries Powered by Google Gemini AI with Speech & PDF export",
+  "type": "module"
+}

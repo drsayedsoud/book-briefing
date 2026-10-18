@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>خُلاصة الكتب | ملخصات ذكية بالذكاء الاصطناعي (Gemini AI)</title>
+  <link rel="icon" type="image/svg+xml" href="/public/book-icon.svg" />
+  
+  <!-- Google Fonts: Cairo & Amiri -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Cairo', 'system-ui', 'sans-serif'],
+            serif: ['Amiri', 'serif'],
+          },
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+    }
+    .font-serif-ar {
+      font-family: 'Amiri', serif;
+    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #090d16;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-card {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-emerald-500 selection:text-slate-950 antialiased flex flex-col justify-between">
+
+  <!-- ========================= رأس الصفحة (Navbar) ========================= -->
+  <header class="sticky top-0 z-40 w-full backdrop-blur-xl bg-slate-950/80 border-b border-slate-800/80 no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        
+        <!-- اللوجو -->
+        <div onclick="window.app.switchTab('search')" class="flex items-center gap-3 cursor-pointer group">
+          <div class="relative p-2.5 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-slate-950 shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
+            <i data-lucide="book-open" class="w-6 h-6 stroke-[2.5]"></i>
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 absolute -top-1 -right-1 text-amber-300 animate-pulse"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xl sm:text-2xl font-black tracking-tight text-white">
+                خُلاصة <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">الكتب</span>
+              </span>
+              <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
+                Gemini AI
+              </span>
+            </div>
+            <p class="text-xs text-slate-400 hidden sm:block">ملخصات ذكية وعميقة لأهم الكتب العالمية والعربية</p>
+          </div>
+        </div>
+
+        <!-- روابط التبويبات للشاشات المتوسطة والكبيرة -->
+        <nav class="hidden md:flex items-center gap-1.5 p-1 rounded-2xl bg-slate-900/90 border border-slate-800">
+          <button data-nav-tab="search" class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20 transition-all">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <span>تلخيص كتاب</span>
+          </button>
+          <button data-nav-tab="explore-books" class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all">
+            <i data-lucide="book" class="w-4 h-4"></i>
+            <span>مكتبة الكتب</span>
+          </button>
+          <button data-nav-tab="explore-authors" class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all">
+            <i data-lucide="users" class="w-4 h-4"></i>
+            <span>المؤلفون</span>
+          </button>
+          <button data-nav-tab="saved" class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all">
+            <i data-lucide="bookmark" class="w-4 h-4"></i>
+            <span>المحفوظات</span>
+            <span id="saved-count" class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-slate-800 text-emerald-400">0</span>
+          </button>
+        </nav>
+
+        <!-- أزرار الإجراءات (مفتاح API + دليل النشر) -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <!-- زر دليل النشر -->
+          <button class="open-deploy-modal-btn flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 hover:border-slate-700 transition-all" title="دليل رفع التطبيق إلى GitHub و Vercel">
+            <i data-lucide="git-branch" class="w-4 h-4 text-emerald-400"></i>
+            <span class="hidden sm:inline">نشر على Vercel</span>
+          </button>
+
+          <!-- زر مفتاح API -->
+          <button id="api-key-badge" class="open-api-key-modal-btn flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:bg-amber-500/20 transition-all animate-pulse">
+            <i data-lucide="key" class="w-4 h-4"></i>
+            <span id="api-key-badge-text">إدخال مفتاح Gemini</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- نافبار الجوال -->
+      <div class="flex md:hidden items-center justify-around py-2.5 border-t border-slate-800/60 text-xs overflow-x-auto gap-1">
+        <button data-nav-tab="search" class="flex items-center gap-1 px-3 py-1.5 rounded-lg font-bold bg-emerald-500 text-slate-950">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+          <span>تلخيص</span>
+        </button>
+        <button data-nav-tab="explore-books" class="flex items-center gap-1 px-3 py-1.5 rounded-lg font-semibold text-slate-300">
+          <i data-lucide="book" class="w-3.5 h-3.5"></i>
+          <span>الكتب</span>
+        </button>
+        <button data-nav-tab="explore-authors" class="flex items-center gap-1 px-3 py-1.5 rounded-lg font-semibold text-slate-300">
+          <i data-lucide="users" class="w-3.5 h-3.5"></i>
+          <span>المؤلفين</span>
+        </button>
+        <button data-nav-tab="saved" class="flex items-center gap-1 px-3 py-1.5 rounded-lg font-semibold text-slate-300">
+          <i data-lucide="bookmark" class="w-3.5 h-3.5"></i>
+          <span>محفوظاتي</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================= المحتوى الرئيسي ========================= -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow">
+    
+    <!-- 1. تبويب البحث والتوليد الرئيسي (Search Hero) -->
+    <section id="tab-search" class="space-y-12">
+      <!-- Hero Box -->
+      <div class="relative rounded-3xl overflow-hidden bg-gradient-to-b from-slate-900/90 via-slate-900/60 to-slate-950 p-6 sm:p-12 border border-slate-800 shadow-2xl text-center">
+        <!-- Glow Effect -->
+        <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-emerald-500/10 blur-3xl rounded-full pointer-events-none"></div>
+
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs sm:text-sm font-semibold mb-6">
+          <i data-lucide="zap" class="w-4 h-4"></i>
+          <span>الجيل الأحدث من التلخيص الذكي مدعوماً بـ Gemini 2.5 Flash</span>
+        </div>
+
+        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight max-w-4xl mx-auto mb-6">
+          اقرأ أهم كتب العالم في <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">دقائق معدودة</span>
+        </h1>
+
+        <p class="text-sm sm:text-lg text-slate-300 max-w-2xl mx-auto mb-8 leading-relaxed">
+          اكتب اسم أي كتاب تريده وسيتكفل الذكاء الاصطناعي باستخراج الفكرة الجوهرية، أهم الدروس التطبيقية، الاقتباسات الخالدة، والاستماع الصوتي الفوري.
+        </p>
+
+        <!-- صندوق البحث والإرسال -->
+        <div class="max-w-3xl mx-auto">
+          <form id="main-search-form" class="relative flex flex-col sm:flex-row items-center gap-2 p-2 rounded-2xl sm:rounded-full bg-slate-950/80 border-2 border-slate-800 focus-within:border-emerald-500 shadow-xl transition-all">
+            <div class="flex items-center w-full px-4 gap-3 py-2 sm:py-0">
+              <i data-lucide="search" class="w-5 h-5 text-slate-400 flex-shrink-0"></i>
+              <input 
+                id="main-search-input"
+                type="text" 
+                placeholder="اكتب اسم الكتاب أو اسم المؤلف (مثال: العادات الذرية، أولاد حارتنا، روبرت كيوساكي)..." 
+                class="w-full bg-transparent text-sm sm:text-base text-white placeholder-slate-500 focus:outline-none"
+                autocomplete="off"
+                required
+              />
+            </div>
+            
+            <button 
+              type="submit" 
+              class="w-full sm:w-auto px-8 py-3.5 rounded-xl sm:rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 transition-all flex-shrink-0">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+              <span>لخّص الآن</span>
+            </button>
+          </form>
+
+          <!-- خيارات نمط التلخيص -->
+          <div class="flex items-center justify-center gap-2 mt-4 text-xs font-semibold">
+            <span class="text-slate-400">عمق التلخيص:</span>
+            <div class="inline-flex p-1 rounded-xl bg-slate-900 border border-slate-800">
+              <button data-mode="comprehensive" class="mode-selector-btn px-3 py-1 rounded-lg bg-emerald-500 text-slate-950 font-bold transition-all">
+                شامل ومفصل
+              </button>
+              <button data-mode="concise" class="mode-selector-btn px-3 py-1 rounded-lg text-slate-400 hover:text-white transition-all">
+                سريع ونقاط
+              </button>
+              <button data-mode="executive" class="mode-selector-btn px-3 py-1 rounded-lg text-slate-400 hover:text-white transition-all">
+                تنفيذي للمدراء
+              </button>
+            </div>
+          </div>
+
+          <!-- اقتراحات سريعة بنقرة واحدة -->
+          <div class="mt-6 flex flex-wrap items-center justify-center gap-2">
+            <span class="text-xs text-slate-500 font-semibold">جرّب فوراً:</span>
+            <button data-title="العادات الذرية" data-author="جيمس كلير" class="quick-book-chip text-xs px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition-all flex items-center gap-1.5">
+              <span>العادات الذرية</span>
+              <span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-1 rounded">جاهز</span>
+            </button>
+            <button data-title="الأب الغني والأب الفقير" data-author="روبرت كيوساكي" class="quick-book-chip text-xs px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition-all flex items-center gap-1.5">
+              <span>الأب الغني والأب الفقير</span>
+              <span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-1 rounded">جاهز</span>
+            </button>
+            <button data-title="فن اللامبالاة" data-author="مارك مانسون" class="quick-book-chip text-xs px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition-all">
+              فن اللامبالاة
+            </button>
+            <button data-title="مقدمة ابن خلدون" data-author="ابن خلدون" class="quick-book-chip text-xs px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition-all">
+              مقدمة ابن خلدون
+            </button>
+            <button data-title="التفكير، السريع والبطيء" data-author="دانيال كانمان" class="quick-book-chip text-xs px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition-all">
+              التفكير، السريع والبطيء
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- المزايا الثلاثية -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl bg-slate-900/60 border border-slate-800/80 hover:border-slate-700 transition-all">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-4">
+            <i data-lucide="layers" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-base font-bold text-white mb-2">استخلاص الأفكار العميقة</h3>
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            لا نكتفي بأسطر سطحية؛ بل نمنحك الفكرة الجوهرية، والدروس العملية المقترنة بأمثلة واقعية، وترتيب فصول الكتاب.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900/60 border border-slate-800/80 hover:border-slate-700 transition-all">
+          <div class="w-12 h-12 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center mb-4">
+            <i data-lucide="headphones" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-base font-bold text-white mb-2">قارئ صوتي مدمج</h3>
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            استمع للملخص كاملاً أثناء قيادة السيارة أو ممارسة الرياضة عبر تقنية تحويل النص لكلام مع التحكم بالسرعة.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900/60 border border-slate-800/80 hover:border-slate-700 transition-all">
+          <div class="w-12 h-12 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center mb-4">
+            <i data-lucide="file-down" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-base font-bold text-white mb-2">تصدير PDF وحفظ محلي</h3>
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            احفظ ملخصاتك في مفضلتك الخاصة في المتصفح لتعود لها بأي وقت، أو اطبعها كملف PDF أنيق بنقرة واحدة.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. تبويب عرض الملخص (Summary View) -->
+    <section id="tab-summary" class="hidden space-y-6">
+      
+      <!-- حالة التحميل بالذكاء الاصطناعي (Skeleton Loader) -->
+      <div id="summary-loading" class="hidden bg-slate-900/80 border border-slate-800 rounded-3xl p-8 sm:p-12 text-center animate-pulse space-y-6">
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+          <i data-lucide="sparkles" class="w-8 h-8 animate-spin"></i>
+        </div>
+        <div>
+          <h2 class="text-xl sm:text-2xl font-black text-white mb-2">
+            جارٍ تحليل وتلخيص <span id="loading-book-name" class="text-emerald-400"></span>...
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-400">يقوم نموذج Gemini باستخراج أطروحة الكتاب، الفصول، والدروس العملية</p>
+        </div>
+        <div class="space-y-3 max-w-xl mx-auto pt-4">
+          <div class="h-4 bg-slate-800 rounded-full w-full"></div>
+          <div class="h-4 bg-slate-800 rounded-full w-5/6 mx-auto"></div>
+          <div class="h-4 bg-slate-800 rounded-full w-4/6 mx-auto"></div>
+        </div>
+      </div>
+
+      <!-- حالة الخطأ -->
+      <div id="summary-error" class="hidden bg-rose-950/40 border border-rose-500/30 rounded-3xl p-8 text-center space-y-4">
+        <i data-lucide="alert-triangle" class="w-12 h-12 mx-auto text-rose-400"></i>
+        <h3 class="text-lg font-bold text-white">تعذر إتمام التلخيص</h3>
+        <p id="error-message-text" class="text-sm text-rose-300 max-w-lg mx-auto leading-relaxed"></p>
+        <div class="flex items-center justify-center gap-3 pt-2">
+          <button onclick="window.app.switchTab('search')" class="px-5 py-2.5 rounded-xl text-xs font-bold bg-slate-800 text-white hover:bg-slate-700">
+            العودة للبحث
+          </button>
+          <button class="open-api-key-modal-btn px-5 py-2.5 rounded-xl text-xs font-bold bg-rose-600 text-white hover:bg-rose-500">
+            فحص مفتاح Gemini
+          </button>
+        </div>
+      </div>
+
+      <!-- حالة لا يوجد ملخص بعد -->
+      <div id="summary-empty" class="hidden text-center py-20 bg-slate-900/40 border border-slate-800/80 rounded-3xl">
+        <i data-lucide="book-open" class="w-16 h-16 mx-auto text-slate-600 mb-4"></i>
+        <h3 class="text-xl font-bold text-white mb-2">لم تختر كتاباً بعد</h3>
+        <p class="text-sm text-slate-400 mb-6">اكتب اسم أي كتاب تريده أو اختر كتاباً من مكتبة الكتب المقترحة</p>
+        <button onclick="window.app.switchTab('search')" class="px-6 py-3 rounded-xl bg-emerald-500 text-slate-950 font-bold text-sm">
+          البحث عن كتاب
+        </button>
+      </div>
+
+      <!-- حاوية الملخص الكاملة -->
+      <article id="summary-content" class="space-y-6">
+        
+        <!-- بطاقة رأس الملخص وأزرار التحكم -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-2xl print-card">
+          <!-- خلفية جمالية ملونة خافتة -->
+          <div class="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 blur-3xl rounded-full pointer-events-none"></div>
+
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-800">
+            <div>
+              <div class="flex flex-wrap items-center gap-2 mb-3">
+                <span id="sum-genre" class="text-xs font-bold px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  تطوير ذات
+                </span>
+                <span id="sum-year" class="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-800 text-slate-400">
+                  2018
+                </span>
+                <span id="sum-reading-time" class="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-800 text-slate-400">
+                  7 دقائق قراءة
+                </span>
+                <span id="sum-rating" class="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                  4.8 / 5 ★
+                </span>
+              </div>
+
+              <h1 id="sum-title" class="text-2xl sm:text-4xl font-black text-white mb-1.5 leading-snug"></h1>
+              <p id="sum-original-title" class="text-xs sm:text-sm text-slate-500 font-mono mb-2"></p>
+              
+              <div class="flex items-center gap-2 text-sm sm:text-base text-slate-300 font-semibold">
+                <i data-lucide="feather" class="w-4 h-4 text-emerald-400"></i>
+                <span>المؤلف: </span>
+                <span id="sum-author" class="text-emerald-400"></span>
+              </div>
+            </div>
+
+            <!-- شريط أدوات التحكم بالملخص (حفظ، نسخ، طباعة) -->
+            <div class="flex flex-wrap items-center gap-2 no-print">
+              <button id="action-save-btn" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all">
+                <i data-lucide="bookmark" class="w-4 h-4"></i>
+                <span>حفظ في المفضلة</span>
+              </button>
+
+              <button id="action-copy-btn" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all">
+                <i data-lucide="copy" class="w-4 h-4"></i>
+                <span>نسخ الملخص</span>
+              </button>
+
+              <button id="action-print-btn" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all">
+                <i data-lucide="printer" class="w-4 h-4"></i>
+                <span>تصدير PDF</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- شريط مشغل الصوت التفاعلي (Audio Reader Bar) -->
+          <div id="audio-player-bar" class="mt-6 p-4 rounded-2xl bg-slate-950/70 border border-slate-800/90 flex flex-wrap items-center justify-between gap-4 no-print">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+                <i data-lucide="headphones" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-white">الاستماع للملخص صوتياً</p>
+                <p class="text-[11px] text-slate-400">قراءة صوتية ذكية باللغة العربية الفصحى</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button id="audio-play-btn" class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md shadow-emerald-500/20 transition-all">
+                <i data-lucide="play" class="w-4 h-4 fill-slate-950"></i>
+                <span>تشغيل الصوت</span>
+              </button>
+
+              <button id="audio-pause-btn" class="hidden flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 transition-all">
+                <i data-lucide="pause" class="w-4 h-4 fill-slate-950"></i>
+                <span>إيقاف مؤقت</span>
+              </button>
+
+              <button id="audio-stop-btn" class="p-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all" title="إيقاف نهائي">
+                <i data-lucide="square" class="w-4 h-4"></i>
+              </button>
+
+              <button id="audio-speed-btn" class="px-2.5 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all" title="تغيير السرعة">
+                1.0x
+              </button>
+            </div>
+          </div>
+
+          <!-- الفكرة الجوهرية المكثفة (Pitch) -->
+          <div class="mt-6 p-5 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-teal-950/20 to-slate-950 border-r-4 border-emerald-500">
+            <span class="text-[11px] font-bold text-emerald-400 tracking-wider uppercase mb-1 block">الفكرة الجوهرية في جملة واحدة:</span>
+            <p id="sum-pitch" class="text-base sm:text-lg font-bold text-white font-serif-ar leading-relaxed italic"></p>
+          </div>
+        </div>
+
+        <!-- الملخص التنفيذي -->
+        <section class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 sm:p-8 print-card">
+          <div class="flex items-center gap-2.5 mb-4 text-emerald-400">
+            <i data-lucide="align-right" class="w-5 h-5"></i>
+            <h2 class="text-lg sm:text-xl font-bold text-white">الملخص التنفيذي الشامل</h2>
+          </div>
+          <div id="sum-executive" class="space-y-3 font-serif-ar"></div>
+        </section>
+
+        <!-- الدروس المستفادة والأفكار الجوهرية (Takeaways) -->
+        <section class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 sm:p-8 print-card">
+          <div class="flex items-center gap-2.5 mb-6 text-emerald-400">
+            <i data-lucide="check-square" class="w-5 h-5"></i>
+            <h2 class="text-lg sm:text-xl font-bold text-white">أهم الدروس المستفادة والتطبيقات العملية</h2>
+          </div>
+          <div id="sum-takeaways" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </section>
+
+        <!-- محاور وفصول الكتاب -->
+        <section class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 sm:p-8 print-card">
+          <div class="flex items-center gap-2.5 mb-4 text-emerald-400">
+            <i data-lucide="list-ordered" class="w-5 h-5"></i>
+            <h2 class="text-lg sm:text-xl font-bold text-white">محاور وفصول الكتاب الرئيسية</h2>
+          </div>
+          <div id="sum-chapters" class="space-y-3"></div>
+        </section>
+
+        <!-- شبكة الاقتباسات ونبذة الكاتب -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          <!-- الاقتباسات البارزة -->
+          <section class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 sm:p-8 print-card flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-2.5 mb-4 text-amber-400">
+                <i data-lucide="quote" class="w-5 h-5"></i>
+                <h2 class="text-lg font-bold text-white">اقتباسات ملهمة من الكتاب</h2>
+              </div>
+              <div id="sum-quotes" class="space-y-3"></div>
+            </div>
+          </section>
+
+          <!-- نبذة عن المؤلف -->
+          <section class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 sm:p-8 print-card flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-2.5 mb-4 text-cyan-400">
+                <i data-lucide="user-check" class="w-5 h-5"></i>
+                <h2 class="text-lg font-bold text-white">عن الكاتب وخلفية التأليف</h2>
+              </div>
+              <p id="sum-author-bio" class="text-xs sm:text-sm text-slate-300 leading-relaxed font-serif-ar"></p>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- خطوات عملية قابلة للتطبيق + الجمهور المستهدف -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          <!-- خطوات للبدء اليوم -->
+          <section class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 sm:p-8 print-card">
+            <div class="flex items-center gap-2.5 mb-4 text-emerald-400">
+              <i data-lucide="trending-up" class="w-5 h-5"></i>
+              <h2 class="text-lg font-bold text-white">خطة عمل: خطوات تبدأ بتطبيقها اليوم</h2>
+            </div>
+            <ul id="sum-steps" class="space-y-3"></ul>
+          </section>
+
+          <!-- لمن يصلح هذا الكتاب -->
+          <section class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 sm:p-8 print-card">
+            <div class="flex items-center gap-2.5 mb-4 text-indigo-400">
+              <i data-lucide="target" class="w-5 h-5"></i>
+              <h2 class="text-lg font-bold text-white">الفئات المستهدفة</h2>
+            </div>
+            
+            <div class="space-y-4">
+              <div>
+                <p class="text-xs font-bold text-emerald-400 mb-2">ينصح بقراءته لـ:</p>
+                <ul id="sum-target-for" class="space-y-2"></ul>
+              </div>
+
+              <div>
+                <p class="text-xs font-bold text-rose-400 mb-2">قد لا يناسب:</p>
+                <ul id="sum-target-not" class="space-y-2"></ul>
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+      </article>
+
+    </section>
+
+    <!-- 3. تبويب مكتبة الكتب المقترحة (Explore Books) -->
+    <section id="tab-explore-books" class="hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-black text-white">مكتبة الكتب الشائعة</h2>
+          <p class="text-xs sm:text-sm text-slate-400">تصفح أشهر أمهات الكتب العربية والعالمية مع تلخيص فوري</p>
+        </div>
+
+        <!-- بحث داخل الكتب -->
+        <div class="relative w-full sm:w-72">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute right-3 top-3"></i>
+          <input 
+            id="books-search-input"
+            type="text" 
+            placeholder="ابحث بالعنوان، الكاتب، أو الموضوع..." 
+            class="w-full pl-3 pr-9 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+          />
+        </div>
+      </div>
+
+      <!-- أشرطة التصنيفات -->
+      <div id="category-pills" class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none"></div>
+
+      <!-- شبكة الكتب -->
+      <div id="books-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
+    </section>
+
+    <!-- 4. تبويب دليل المؤلفين (Explore Authors) -->
+    <section id="tab-explore-authors" class="hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-black text-white">دليل عمالقة الفكر والمؤلفين</h2>
+          <p class="text-xs sm:text-sm text-slate-400">تعرف على سير أعلام الفكر والأدب ولخص أشهر أعمالهم بنقرة واحدة</p>
+        </div>
+
+        <!-- بحث داخل المؤلفين -->
+        <div class="relative w-full sm:w-72">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute right-3 top-3"></i>
+          <input 
+            id="authors-search-input"
+            type="text" 
+            placeholder="ابحث باسم المؤلف أو جنسيته..." 
+            class="w-full pl-3 pr-9 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+          />
+        </div>
+      </div>
+
+      <!-- شبكة المؤلفين -->
+      <div id="authors-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+
+    <!-- 5. تبويب المحفوظات (Saved Summaries) -->
+    <section id="tab-saved" class="hidden space-y-6">
+      <div>
+        <h2 class="text-2xl font-black text-white">مكتبتي المحفوظة</h2>
+        <p class="text-xs sm:text-sm text-slate-400">جميع الملخصات التي قمت بحفظها مخزنة على جهازك ويمكنك الوصول إليها دوماً</p>
+      </div>
+
+      <div id="saved-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    </section>
+
+  </main>
+
+  <!-- ========================= التذييل (Footer) ========================= -->
+  <footer class="border-t border-slate-800/80 bg-slate-950 py-8 no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+      <div class="flex items-center gap-2">
+        <i data-lucide="book-open" class="w-4 h-4 text-emerald-400"></i>
+        <span class="font-bold text-slate-400">تطبيق خُلاصة الكتب</span>
+        <span>•</span>
+        <span>مدعوم بنماذج Gemini AI من Google</span>
+      </div>
+      <div>
+        <span>جاهز للنشر على GitHub و Vercel بنقرة واحدة</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================= نافذة مفتاح Gemini API (Modal) ========================= -->
+  <div id="api-key-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl relative">
+      <button id="close-api-key-modal" class="absolute top-5 left-5 text-slate-400 hover:text-white transition-colors">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+          <i data-lucide="key" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-black text-white">مفتاح Gemini API</h3>
+          <p class="text-xs text-slate-400">لتوليد ملخصات لأي كتاب تريده</p>
+        </div>
+      </div>
+
+      <p class="text-xs text-slate-300 leading-relaxed mb-4">
+        يمكنك الحصول على مفتاح API مجاني تماماً خلال 30 ثانية من منصة 
+        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="text-emerald-400 underline font-bold">Google AI Studio</a>.
+      </p>
+
+      <div class="space-y-3 mb-4">
+        <label class="block text-xs font-semibold text-slate-300">الصق مفتاحك هنا (يبدأ بـ AIzaSy...):</label>
+        <input 
+          id="api-key-input"
+          type="password" 
+          placeholder="AIzaSy..." 
+          class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 font-mono"
+        />
+        <div id="api-key-test-status" class="hidden"></div>
+      </div>
+
+      <div class="flex items-center gap-2 pt-2">
+        <button id="save-api-key-btn" class="flex-1 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm transition-all shadow-md shadow-emerald-500/20">
+          حفظ المفتاح محلياً
+        </button>
+        <button id="test-api-key-btn" class="px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs sm:text-sm transition-all border border-slate-700">
+          فحص المفتاح
+        </button>
+      </div>
+
+      <div class="mt-4 pt-4 border-t border-slate-800/80 text-[11px] text-slate-400 leading-relaxed">
+        <span class="font-bold text-slate-300">ملاحظة أمان:</span> يُحفظ المفتاح داخل متصفحك الشخصي فقط (LocalStorage)، أو يمكنك ضبطه في متغيرات بيئة Vercel (<code class="text-emerald-400">GEMINI_API_KEY</code>) عند نشر التطبيق.
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================= نافذة دليل النشر على Vercel و GitHub (Modal) ========================= -->
+  <div id="deploy-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative">
+      <button id="close-deploy-modal" class="absolute top-5 left-5 text-slate-400 hover:text-white transition-colors">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center">
+          <i data-lucide="git-branch" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h3 class="text-xl font-black text-white">كيف ترفع التطبيق على GitHub و Vercel؟</h3>
+          <p class="text-xs text-slate-400">خطوات بسيطة للحصول على رابط مباشر يشتغل فوراً</p>
+        </div>
+      </div>
+
+      <div class="space-y-6 text-xs sm:text-sm text-slate-300 leading-relaxed">
+        
+        <!-- الخطوة 1 -->
+        <div class="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-2">
+          <div class="flex items-center gap-2 font-bold text-emerald-400 text-sm">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs">1</span>
+            <span>إنشاء مستودع على GitHub</span>
+          </div>
+          <p class="text-slate-400">
+            اذهب إلى <a href="https://github.com/new" target="_blank" class="text-emerald-400 underline font-bold">github.com/new</a> وأنشئ مستودعاً جديداً باسم <code class="text-white bg-slate-800 px-1 rounded">book-briefing</code> (اختره Public).
+          </p>
+        </div>
+
+        <!-- الخطوة 2 -->
+        <div class="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-2">
+          <div class="flex items-center gap-2 font-bold text-emerald-400 text-sm">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs">2</span>
+            <span>رفع الأكواد من سطر الأوامر (Git Commands)</span>
+          </div>
+          <p class="text-slate-400">نفذ هذه الأوامر في مجلد المشروع:</p>
+          <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 font-mono text-[11px] sm:text-xs text-emerald-300 overflow-x-auto space-y-1">
+            <div>git init</div>
+            <div>git add .</div>
+            <div>git commit -m "Initial commit of Book Briefing App"</div>
+            <div>git branch -M main</div>
+            <div>git remote add origin https://github.com/اسم_حسابك/book-briefing.git</div>
+            <div>git push -u origin main</div>
+          </div>
+        </div>
+
+        <!-- الخطوة 3 -->
+        <div class="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-2">
+          <div class="flex items-center gap-2 font-bold text-emerald-400 text-sm">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs">3</span>
+            <span>الربط والنشر على Vercel</span>
+          </div>
+          <ol class="list-decimal list-inside space-y-1.5 text-slate-300">
+            <li>سجل دخول إلى <a href="https://vercel.com" target="_blank" class="text-emerald-400 underline font-bold">vercel.com</a> باستخدام حساب GitHub.</li>
+            <li>اضغط <strong>"Add New"</strong> ثم <strong>"Project"</strong>.</li>
+            <li>اختر مستودع <code class="text-white bg-slate-800 px-1 rounded">book-briefing</code> واضغط <strong>Import</strong>.</li>
+            <li>في قسم <strong>Environment Variables</strong> أضف:
+              <div class="my-1.5 p-2 rounded bg-slate-900 border border-slate-800 font-mono text-xs">
+                Key: <span class="text-emerald-400">GEMINI_API_KEY</span><br>
+                Value: <span class="text-slate-400">مفتاحك من Google AI Studio</span>
+              </div>
+            </li>
+            <li>اضغط <strong>Deploy</strong>، وخلال 15 ثانية ستحصل على رابط حي مباشر (مثل: <code class="text-emerald-400">book-briefing.vercel.app</code>)!</li>
+          </ol>
+        </div>
+
+      </div>
+
+      <div class="mt-6 flex justify-end">
+        <button onclick="document.getElementById('deploy-modal').classList.add('hidden')" class="px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs">
+          حسناً، فهمت
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- السكربتات التفاعلية -->
+  <script type="module" src="./data.js"></script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
