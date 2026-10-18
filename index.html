@@ -321,6 +321,42 @@
         </div>
       </div>
 
+      <!-- شريط التحميل والتقدم التفاعلي الذكي (Progressive Stream Indicator) -->
+      <div id="progressive-banner" class="hidden rounded-2xl bg-gradient-to-r from-emerald-950/80 via-slate-900/90 to-teal-950/80 border border-emerald-500/30 p-4 shadow-xl no-print transition-all">
+        <div class="flex items-center justify-between gap-3 mb-2">
+          <div class="flex items-center gap-2.5">
+            <span class="relative flex h-3 w-3">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+            </span>
+            <span id="progressive-banner-title" class="text-xs sm:text-sm font-bold text-white">
+              جارٍ تلخيص الكتاب في الخلفية عبر Gemini...
+            </span>
+          </div>
+          <span id="progressive-banner-percent" class="text-xs font-mono font-bold text-emerald-400">45%</span>
+        </div>
+        <p id="progressive-banner-desc" class="text-[11px] text-slate-300 mb-2">
+          ابدأ بقراءة الفكرة الجوهرية والملخص أدناه، بينما نقوم باستخراج الدروس المستفادة والفصول التفصيلية بالخلفية!
+        </p>
+        <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+          <div id="progressive-banner-bar" class="bg-gradient-to-r from-emerald-400 to-teal-400 h-1.5 rounded-full transition-all duration-500" style="width: 45%"></div>
+        </div>
+      </div>
+
+      <!-- بطاقة إضاءة قرائية فورية (يقرأها المستخدم من أول ثانية) -->
+      <div id="instant-reading-card" class="hidden rounded-2xl bg-slate-900/90 border border-amber-500/30 p-5 shadow-lg no-print">
+        <div class="flex items-center gap-2 text-amber-400 mb-2 text-xs font-bold">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+          <span>إضاءة تأملية أثناء التحليل:</span>
+        </div>
+        <p id="instant-quote-text" class="text-sm font-serif-ar text-slate-200 italic mb-2 leading-relaxed">
+          "القراءة وحدها هي التي تعطي الإنسان أكثر من حياة واحدة؛ لأنها تزيد هذه الحياة عمقاً."
+        </p>
+        <p id="instant-quote-author" class="text-[11px] text-slate-400 text-left font-medium">
+          — عباس محمود العقاد
+        </p>
+      </div>
+
       <!-- حالة لا يوجد ملخص بعد -->
       <div id="summary-empty" class="hidden text-center py-20 bg-slate-900/40 border border-slate-800/80 rounded-3xl">
         <i data-lucide="book-open" class="w-16 h-16 mx-auto text-slate-600 mb-4"></i>

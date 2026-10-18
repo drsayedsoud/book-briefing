@@ -1,5 +1,5 @@
 // api/summarize.js - Vercel Serverless Function
-// تلخيص الكتب باستخدام نماذج Google Gemini
+// يدعم التوليد الفوري على مرحلتين (Quick Preview & Full Deep-Dive) لتمكين القارئ من البدء بالقراءة فوراً دون انتظار
 
 const MODELS = [
   'gemini-2.5-flash',
@@ -27,13 +27,13 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { bookTitle, author, mode = 'comprehensive', clientApiKey } = req.body || {};
+    const { bookTitle, author, mode = 'comprehensive', stage = 'full', clientApiKey } = req.body || {};
 
     if (!bookTitle || !bookTitle.trim()) {
       return res.status(400).json({ error: 'يرجى تقديم اسم الكتاب المطلوب تلخيصه.' });
     }
 
-    // Determine API Key: Client Key OR Server Environment Variable
+    // Determine API Key
     const apiKey = (clientApiKey || process.env.GEMINI_API_KEY || '').trim();
 
     if (!apiKey) {
@@ -44,7 +44,31 @@ export default async function handler(req, res) {
 
     const searchQuery = author ? `كتاب "${bookTitle.trim()}" للمؤلف "${author.trim()}"` : `كتاب "${bookTitle.trim()}"`;
 
-    const systemPrompt = `أنت ناقد ومفكر أدبي واستشاري قراءة وخبير تلخيص كتب عالمي ومخضرم.
+    let systemPrompt = '';
+    let maxTokens = 4096;
+
+    if (stage === 'quick') {
+      // مرحلة أولى سريعة جداً (تصل في ثانية واحدة ليقرأ المستخدم فوراً!)
+      maxTokens = 800;
+      systemPrompt = `أنت ناقد ومفكر أدبي سريع وخبير في تلخيص أمهات الكتب.
+المطلوب إعطاء قارئ مهتم فكرة فورية وسريعة عن الكتاب ليبدأ في القراءة في ثانية واحدة.
+أعد فقط كائن JSON صالح وبدون أي مقدمات أو أسطر إضافية:
+{
+  "id": "معرف قصير باللاتينية",
+  "title": "الاسم الدقيق للكتاب بالعربية",
+  "originalTitle": "الاسم الأصلي بلغة النشر",
+  "author": "اسم المؤلف بالعربية",
+  "genre": "تصنيف الكتاب",
+  "publishedYear": 2020,
+  "rating": 4.8,
+  "readingTimeMinutes": 6,
+  "oneSentencePitch": "فكرة الكتاب الجوهرية في جملة واحدة بليغة ومكثفة تترك أثراً في النفس فوراً",
+  "executiveSummary": "ملخص تمهيدي وتنفيذي فوري من 2 إلى 3 فقرات مشوقة وثرية تشرح أطروحة الكتاب وأهميته الفكرية"
+}`;
+    } else {
+      // مرحلة كاملة وشاملة (تجلب الدروس المستفادة والفصول والخطوات العملية)
+      maxTokens = 4096;
+      systemPrompt = `أنت ناقد ومفكر أدبي واستشاري قراءة وخبير تلخيص كتب عالمي ومخضرم.
 مهمتك إعداد ملخص احترافي، بليغ، عميق وشامل باللغة العربية الفصحى الراقية.
 
 أعد الرد على شكل JSON صالح فقط دون أي نص قبله أو بعده:
@@ -58,7 +82,7 @@ export default async function handler(req, res) {
   "rating": 4.8,
   "readingTimeMinutes": 6,
   "oneSentencePitch": "فكرة الكتاب الجوهرية المكثفة في جملة واحدة عميقة وبليغة تترك أثراً في النفس",
-  "executiveSummary": "ملخص تنفيذي متكامل ومكتوب بلغة راقية من 3 إلى 5 فقرات يشرح أطروحة الكتاب، السياق التاريخي أو المعرفي، وكيف بنى الكاتب حججه وأفكاره",
+  "executiveSummary": "ملخص تنفيذي متكامل ومكتوب بلغة راقية من 3 إلى 4 فقرات يشرح أطروحة الكتاب، السياق، وكيف بنى الكاتب أفكاره",
   "keyTakeaways": [
     {
       "title": "عنوان الفكرة أو الدرس المستفاد الجوهري",
@@ -85,7 +109,7 @@ export default async function handler(req, res) {
       "الفئة الثالثة"
     ],
     "notRecommendedFor": [
-      "الفئة التي قد لا يناسبها هذا الكتاب أو تجده غير مفيد لها"
+      "الفئة التي قد لا يناسبها هذا الكتاب"
     ]
   },
   "actionableSteps": [
@@ -93,10 +117,8 @@ export default async function handler(req, res) {
     "خطوة عملية رقم 2",
     "خطوة عملية رقم 3"
   ]
-}
-
-مستوى الشمول:
-${mode === 'comprehensive' ? 'شامل ومفصل جداً مع 4-6 دروس مستفادة و3-4 فصول رئيسية.' : mode === 'concise' ? 'مركز وموجز في نقاط سريعة.' : 'ملخص تنفيذي موجه للمدراء ورواد الأعمال مع التركيز على النتائج العملية.'}`;
+}`;
+    }
 
     const userPrompt = `المطلوب تلخيص: ${searchQuery}. أخرج فقط كائن JSON الصالح باللغة العربية.`;
 
@@ -110,7 +132,7 @@ ${mode === 'comprehensive' ? 'شامل ومفصل جداً مع 4-6 دروس م�
       generationConfig: {
         temperature: 0.3,
         topP: 0.9,
-        maxOutputTokens: 4096,
+        maxOutputTokens: maxTokens,
         responseMimeType: 'application/json'
       }
     };
@@ -166,6 +188,7 @@ ${mode === 'comprehensive' ? 'شامل ومفصل جداً مع 4-6 دروس م�
 
     return res.status(200).json({
       success: true,
+      stage: stage,
       summary: parsed,
       model: usedModel
     });

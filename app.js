@@ -1,5 +1,4 @@
-// app.js - المحرك التفاعلي لتطبيق خلاصة الكتب الذكي
-import { CATEGORIES, CURATED_BOOKS, CURATED_AUTHORS, SAMPLE_SUMMARIES } from './data.js';
+import { CATEGORIES, CURATED_BOOKS, CURATED_AUTHORS, SAMPLE_SUMMARIES, READING_WISDOM } from './data.js';
 
 // حالة التطبيق (State)
 const state = {
@@ -341,59 +340,204 @@ function renderSavedSummaries() {
   initIcons();
 }
 
-// توليد ملخص جديد عبر Gemini API أو السيرفرليس
+// توليد ملخص جديد ذكي مع قراءة فورية تدريجية (بدون انتظار المستخدم)
 async function handleGenerateSummary(bookTitle, author = '') {
   if (!bookTitle || !bookTitle.trim()) {
     alert('يرجى إدخال اسم الكتاب أولاً.');
     return;
   }
 
-  // التبديل إلى تبويب الملخص وإظهار شاشة التحميل
+  const cleanTitle = bookTitle.trim();
+  const cleanAuthor = author ? author.trim() : '';
+
+  // 1. الفحص الفوري: هل الكتاب متاح مسبقاً في النماذج الجاهزة؟ (0ms)
+  const matchedKey = Object.keys(SAMPLE_SUMMARIES).find(k => {
+    const s = SAMPLE_SUMMARIES[k];
+    return s.title.toLowerCase().includes(cleanTitle.toLowerCase()) || 
+           cleanTitle.toLowerCase().includes(s.title.toLowerCase()) ||
+           k.toLowerCase() === cleanTitle.toLowerCase();
+  });
+
+  if (matchedKey && SAMPLE_SUMMARIES[matchedKey]) {
+    displaySummary(SAMPLE_SUMMARIES[matchedKey]);
+    switchTab('summary');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+
+  // 2. التحويل الفوري إلى صفحة الملخص وعرض إضاءة قرائية من الثانية الأولى (0 ثانية انتظار!)
   switchTab('summary');
-  showLoading(bookTitle);
   stopSpeech();
+  startProgressiveReading(cleanTitle, cleanAuthor);
 
   try {
-    let summaryData = null;
+    // 3. المرحلة الأولى: ملخص فوري وسريع للفكرة الجوهرية (يصل في 1.2 ثانية تقريباً)
+    updateProgressiveBanner(30, 'جارٍ استخلاص الفكرة الجوهرية ومقدمة الكتاب...', 'اقرأ الإضاءة التأملية بينما نجهز الفكرة الجوهرية والملخص التمهيدي');
 
-    // 1. المحاولة الأولى: طلب دالة Vercel Serverless Function `/api/summarize`
+    let quickData = null;
     try {
-      const serverResponse = await fetch('/api/summarize', {
+      const quickRes = await fetch('/api/summarize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          bookTitle: bookTitle.trim(),
-          author: author.trim(),
+          bookTitle: cleanTitle,
+          author: cleanAuthor,
           mode: state.summaryMode,
+          stage: 'quick',
           clientApiKey: state.apiKey
         })
       });
-
-      if (serverResponse.ok) {
-        const json = await serverResponse.json();
-        if (json.success && json.summary) {
-          summaryData = json.summary;
+      if (quickRes.ok) {
+        const qJson = await quickRes.json();
+        if (qJson.success && qJson.summary) {
+          quickData = qJson.summary;
         }
       }
-    } catch (err) {
-      console.warn('Serverless endpoint not reachable, trying direct client API call...', err);
+    } catch (e) {
+      console.warn('Quick serverless call failed, will proceed directly', e);
     }
 
-    // 2. المحاولة الثانية: إذا لم تكن الدالة متاحة محلياً، نطلب مباشرة من Google Gemini REST API
-    if (!summaryData) {
-      summaryData = await callGeminiDirectly(bookTitle, author);
+    if (quickData) {
+      // إظهار الفكرة الجوهرية والملخص التنفيذي فوراً ليبدأ القارئ بالقراءة الآن!
+      displayQuickStage(quickData);
+      updateProgressiveBanner(70, '📖 الفكرة الجوهرية جاهزة للقراءة الآن!', 'جاري استخراج الدروس المستفادة، الفصول، والاقتباسات بالخلفية...');
     }
 
-    // حفظ آخر ملخص تم عرضه
-    state.currentSummary = summaryData;
-    displaySummary(summaryData);
+    // 4. المرحلة الثانية: استكمال التحليل العميق والشامل بالخلفية دون مقاطعة القارئ
+    let fullData = null;
+    try {
+      const fullRes = await fetch('/api/summarize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          bookTitle: cleanTitle,
+          author: cleanAuthor,
+          mode: state.summaryMode,
+          stage: 'full',
+          clientApiKey: state.apiKey
+        })
+      });
+      if (fullRes.ok) {
+        const fJson = await fullRes.json();
+        if (fJson.success && fJson.summary) {
+          fullData = fJson.summary;
+        }
+      }
+    } catch (e) {
+      console.warn('Full serverless call failed, fallback to client', e);
+    }
+
+    if (!fullData) {
+      fullData = await callGeminiDirectly(cleanTitle, cleanAuthor);
+    }
+
+    // عرض الأقسام العميقة المكتملة
+    state.currentSummary = fullData;
+    displaySummary(fullData);
+    finishProgressiveReading();
 
   } catch (error) {
     console.error('Error generating summary:', error);
-    showError(error.message || 'حدث خطأ أثناء الاتصال بالذكاء الاصطناعي. تأكد من صحة مفتاح Gemini API ومن اتصال الإنترنت.');
-  } finally {
-    hideLoading();
+    showError(error.message || 'حدث خطأ أثناء الاتصال بالذكاء الاصطناعي. تأكد من صحة مفتاح Gemini API.');
   }
+}
+
+// بدء القراءة التدريجية الفورية من ثانية الصفر
+function startProgressiveReading(title, author) {
+  const container = document.getElementById('summary-content');
+  const emptyState = document.getElementById('summary-empty');
+  const errorState = document.getElementById('summary-error');
+  const loadingEl = document.getElementById('summary-loading');
+  const banner = document.getElementById('progressive-banner');
+  const quoteCard = document.getElementById('instant-reading-card');
+
+  if (emptyState) emptyState.classList.add('hidden');
+  if (errorState) errorState.classList.add('hidden');
+  if (loadingEl) loadingEl.classList.add('hidden');
+  if (container) container.classList.remove('hidden');
+
+  // تعبئة العنوان فوراً
+  document.getElementById('sum-title').textContent = title;
+  document.getElementById('sum-original-title').textContent = '';
+  document.getElementById('sum-author').textContent = author || 'جاري التعرف على المؤلف...';
+  document.getElementById('sum-genre').textContent = 'كتاب';
+  document.getElementById('sum-year').textContent = '...';
+  document.getElementById('sum-reading-time').textContent = '6 دقائق قراءة';
+  document.getElementById('sum-rating').textContent = '4.8 / 5 ★';
+
+  document.getElementById('sum-pitch').textContent = 'جارٍ تلخيص الفكرة الجوهرية للكتاب بواسطة Gemini AI...';
+  document.getElementById('sum-executive').innerHTML = `
+    <div class="space-y-2 py-4 animate-pulse">
+      <div class="h-4 bg-slate-800 rounded-full w-full"></div>
+      <div class="h-4 bg-slate-800 rounded-full w-5/6"></div>
+      <div class="h-4 bg-slate-800 rounded-full w-4/6"></div>
+    </div>
+  `;
+
+  // إخفاء الأقسام العميقة مؤقتاً لحين وصولها
+  document.getElementById('sum-takeaways').innerHTML = `
+    <div class="col-span-full py-6 text-center text-xs text-slate-500">
+      <i data-lucide="sparkles" class="w-5 h-5 mx-auto mb-2 text-emerald-400 animate-spin"></i>
+      <span>جاري استخراج الدروس المستفادة والأمثلة العملية بالخلفية...</span>
+    </div>
+  `;
+
+  // عرض إضاءة تأملية واقتباس فوري من أول ثانية
+  if (READING_WISDOM && READING_WISDOM.length > 0) {
+    const randomWisdom = READING_WISDOM[Math.floor(Math.random() * READING_WISDOM.length)];
+    const quoteText = document.getElementById('instant-quote-text');
+    const quoteAuthor = document.getElementById('instant-quote-author');
+    if (quoteText) quoteText.textContent = `"${randomWisdom.quote}"`;
+    if (quoteAuthor) quoteAuthor.textContent = `— ${randomWisdom.author}`;
+    quoteCard?.classList.remove('hidden');
+  }
+
+  // عرض شريط التقدم التفاعلي
+  banner?.classList.remove('hidden');
+  updateProgressiveBanner(20, 'جارٍ استدعاء نموذج Gemini 2.5 Flash...', 'اقرأ الإضاءة التأملية بينما يتم تحضير الفكرة الجوهرية والملخص التمهيدي');
+  initIcons();
+}
+
+function updateProgressiveBanner(percent, title, desc) {
+  const banner = document.getElementById('progressive-banner');
+  const bar = document.getElementById('progressive-banner-bar');
+  const percentEl = document.getElementById('progressive-banner-percent');
+  const titleEl = document.getElementById('progressive-banner-title');
+  const descEl = document.getElementById('progressive-banner-desc');
+
+  if (banner) banner.classList.remove('hidden');
+  if (bar) bar.style.width = `${percent}%`;
+  if (percentEl) percentEl.textContent = `${percent}%`;
+  if (titleEl) titleEl.textContent = title;
+  if (descEl) descEl.textContent = desc;
+}
+
+// عرض المرحلة الأولى السريعة فور وصولها في ثانية واحدة
+function displayQuickStage(quick) {
+  if (quick.title) document.getElementById('sum-title').textContent = quick.title;
+  if (quick.originalTitle) document.getElementById('sum-original-title').textContent = `(${quick.originalTitle})`;
+  if (quick.author) document.getElementById('sum-author').textContent = quick.author;
+  if (quick.genre) document.getElementById('sum-genre').textContent = quick.genre;
+  if (quick.publishedYear) document.getElementById('sum-year').textContent = quick.publishedYear;
+  if (quick.oneSentencePitch) document.getElementById('sum-pitch').textContent = `"${quick.oneSentencePitch}"`;
+
+  if (quick.executiveSummary) {
+    const execContainer = document.getElementById('sum-executive');
+    execContainer.innerHTML = quick.executiveSummary
+      .split('\n\n')
+      .filter(p => p.trim())
+      .map(p => `<p class="leading-relaxed text-slate-300 text-sm sm:text-base mb-3">${p}</p>`)
+      .join('');
+  }
+}
+
+// اكتمال التلخيص الشامل بنجاح
+function finishProgressiveReading() {
+  updateProgressiveBanner(100, '✓ اكتمل التلخيص الشامل بنجاح!', 'تم تجهيز كافة الدروس المستفادة والفصول والقارئ الصوتي.');
+  setTimeout(() => {
+    document.getElementById('progressive-banner')?.classList.add('hidden');
+    document.getElementById('instant-reading-card')?.classList.add('hidden');
+  }, 3500);
 }
 
 // طلب مباشر لـ Gemini REST API من المتصفح في حال العمل دون خادم
