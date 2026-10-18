@@ -1,5 +1,7 @@
 # 📚 خُلاصة الكتب (Book Briefing AI)
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/drsayedsoud/book-briefing&env=GEMINI_API_KEY&envDescription=Google%20Gemini%20API%20Key%20from%20Google%20AI%20Studio&project-name=book-briefing)
+
 تطبيق ويب حديث وذكي لتلخيص أمهات الكتب العالمية والعربية بدقة وعمق باستخدام نماذج **Google Gemini AI**، مع إمكانية استعراض مكتبة ضخمة من الكتب والمؤلفين والاستماع للملخص صوتياً وحفظه وتصديره.
 
 ---
